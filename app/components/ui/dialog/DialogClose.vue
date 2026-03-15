@@ -2,7 +2,7 @@
 import type { DialogCloseProps } from "reka-ui"
 import { DialogClose } from "reka-ui"
 
-const props = defineProps<DialogCloseProps>()
+const props = defineProps</* @vue-ignore */ DialogCloseProps>()
 </script>
 
 <template>
