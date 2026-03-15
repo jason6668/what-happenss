@@ -25,6 +25,20 @@ export default defineNuxtConfig({
         }
     },
 
+    // 修复 reka-ui 跨模块 TypeScript extends 类型解析问题
+    vueCompilerOptions: {
+        plugins: [],
+    },
+
+    typescript: {
+        typeCheck: false,
+        tsConfig: {
+            compilerOptions: {
+                skipLibCheck: true,
+            }
+        }
+    },
+
     modules: ['@nuxt/ui', 'shadcn-nuxt'],
     shadcn: {
         prefix: '',
