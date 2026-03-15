@@ -1,0 +1,55 @@
+variables:
+  NAME: 'what-happen'
+  VERSION: 'v1.0.0'
+  IMAGE_NAME: ${NAME}:${VERSION}
+stages:
+  - build
+  - push
+  - clean
+
+build:
+  stage: build
+  only:
+    - master
+  tags:
+    - online
+  before_script:
+    - export NVM_DIR="$HOME/.nvm"
+    - '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' # 加载 nvm
+  script:
+    - echo "Starting build and deploy process..."
+    - echo "Node.js version:"
+    - node -v
+    - echo "Yarn version:"
+    - yarn -v
+    - rm -rf node_modules
+    - yarn
+    - cp .env.example .env
+    - yarn build
+    - echo "Building docker image from project root..."
+    - docker build --no-cache -t ${IMAGE_NAME} -f docker/Dockerfile .
+
+push:
+  stage: push
+  only:
+    - master
+  tags:
+    - online
+  script:
+    - echo "Pushing Docker image to registry..."
+    - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+    - docker tag ${IMAGE_NAME} ${CI_REGISTRY_IMAGE}/${NAME}
+    - docker push ${CI_REGISTRY_IMAGE}/${NAME}
+
+clean:
+  stage: clean
+  only:
+    - master
+  tags:
+    - online
+  script:
+    - echo "Cleaning up local Docker images..."
+    - docker rmi ${IMAGE_NAME} || true
+    - docker rmi ${CI_REGISTRY_IMAGE}/${NAME} || true
+    - docker system prune -f || true
+    - echo "Cleanup completed."
