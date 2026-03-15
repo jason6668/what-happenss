@@ -1,21 +1,37 @@
 <script setup lang="ts">
-import type { AlertDialogContentEmits, AlertDialogContentProps } from "reka-ui"
 import type { HTMLAttributes } from "vue"
 import { reactiveOmit } from "@vueuse/core"
 import {
   AlertDialogContent,
-
   AlertDialogOverlay,
   AlertDialogPortal,
   useForwardPropsEmits,
 } from "reka-ui"
 import { cn } from "@/lib/utils"
 
-const props = defineProps</* @vue-ignore */ AlertDialogContentProps & { class?: HTMLAttributes["class"] }>()
-const emits = defineEmits</* @vue-ignore */ AlertDialogContentEmits>()
+// 彻底移除对 AlertDialogContentProps 的继承，手动定义
+interface Props {
+  class?: HTMLAttributes["class"]
+  forceMount?: boolean
+  trapFocus?: boolean
+  disableOutsidePointerEvents?: boolean
+  onEscapeKeyDown?: (event: KeyboardEvent) => void
+  onPointerDownOutside?: (event: any) => void
+  onFocusOutside?: (event: any) => void
+  onInteractOutside?: (event: any) => void
+}
+
+const props = defineProps<Props>()
+const emits = defineEmits<{
+  (e: 'escapeKeyDown', event: KeyboardEvent): void
+  (e: 'pointerDownOutside', event: any): void
+  (e: 'focusOutside', event: any): void
+  (e: 'interactOutside', event: any): void
+  (e: 'openAutoFocus', event: any): void
+  (e: 'closeAutoFocus', event: any): void
+}>()
 
 const delegatedProps = reactiveOmit(props, "class")
-
 const forwarded = useForwardPropsEmits(delegatedProps, emits)
 </script>
 

@@ -1,23 +1,22 @@
 <script setup lang="ts">
-import type { DialogContentEmits, DialogContentProps } from "reka-ui"
 import type { HTMLAttributes } from "vue"
 import { reactiveOmit } from "@vueuse/core"
+import { DialogContent, DialogPortal, DialogClose, useForwardPropsEmits } from "reka-ui"
 import { X } from "lucide-vue-next"
-import {
-  DialogClose,
-  DialogContent,
-
-  DialogPortal,
-  useForwardPropsEmits,
-} from "reka-ui"
 import { cn } from "@/lib/utils"
 import DialogOverlay from "./DialogOverlay.vue"
 
-const props = defineProps</* @vue-ignore */ DialogContentProps & { class?: HTMLAttributes["class"] }>()
-const emits = defineEmits</* @vue-ignore */ DialogContentEmits>()
+interface Props {
+  class?: HTMLAttributes["class"]
+  forceMount?: boolean
+  trapFocus?: boolean
+  disableOutsidePointerEvents?: boolean
+}
+
+const props = defineProps<Props>()
+const emits = defineEmits(['escapeKeyDown', 'pointerDownOutside', 'focusOutside', 'interactOutside', 'openAutoFocus', 'closeAutoFocus'])
 
 const delegatedProps = reactiveOmit(props, "class")
-
 const forwarded = useForwardPropsEmits(delegatedProps, emits)
 </script>
 
@@ -34,7 +33,6 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
         )"
     >
       <slot />
-
       <DialogClose
         class="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
       >

@@ -2,33 +2,24 @@
 import type { HTMLAttributes } from 'vue'
 import { reactiveOmit } from '@vueuse/core'
 import { X } from 'lucide-vue-next'
-import {
-  DialogClose,
-  DialogContent,
-  type DialogContentEmits,
-  type DialogContentProps,
-  DialogPortal,
-  useForwardPropsEmits,
-} from 'reka-ui'
+import { DialogContent, DialogPortal, DialogClose, useForwardPropsEmits } from 'reka-ui'
 import { cn } from '@/lib/utils'
 import SheetOverlay from './SheetOverlay.vue'
 
-interface SheetContentProps extends /* @vue-ignore */ DialogContentProps {
+interface Props {
   class?: HTMLAttributes['class']
   side?: 'top' | 'right' | 'bottom' | 'left'
+  forceMount?: boolean
+  trapFocus?: boolean
+  disableOutsidePointerEvents?: boolean
 }
 
-defineOptions({
-  inheritAttrs: false,
-})
-
-const props = withDefaults(defineProps<SheetContentProps>(), {
+const props = withDefaults(defineProps<Props>(), {
   side: 'right',
 })
-const emits = defineEmits</* @vue-ignore */ DialogContentEmits>()
+const emits = defineEmits(['escapeKeyDown', 'pointerDownOutside', 'focusOutside', 'interactOutside', 'openAutoFocus', 'closeAutoFocus'])
 
 const delegatedProps = reactiveOmit(props, 'class', 'side')
-
 const forwarded = useForwardPropsEmits(delegatedProps, emits)
 </script>
 
@@ -51,7 +42,6 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
       v-bind="{ ...forwarded, ...$attrs }"
     >
       <slot />
-
       <DialogClose
         class="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none"
       >
