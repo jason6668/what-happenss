@@ -19,6 +19,9 @@ export default defineNuxtConfig({
     nitro: {
         prerender: {
             routes: ['/']
+        },
+        externals: {
+            external: ['sharp', '@img/sharp-wasm32', '@img/sharp-linux-x64', '@img/sharp-linux-arm64']
         }
     },
 
